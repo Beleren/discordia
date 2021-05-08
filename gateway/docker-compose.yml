@@ -1,0 +1,17 @@
+version: "3"
+services:
+  gateway:
+    build: .
+    container_name: gateway
+    networks:
+      - beleren-tv
+    env_file:
+      - .env
+    ports:
+      - 8000:8000
+      - 8001:8001
+
+networks:
+  beleren-tv:
+    external:
+      name: beleren-tv
