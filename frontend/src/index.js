@@ -1,12 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { SocketContext, socket } from './socket-context';
 import './index.css';
 import App from './App';
 // import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <SocketContext.Provider value={socket}>
+      <App />
+    </SocketContext.Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );

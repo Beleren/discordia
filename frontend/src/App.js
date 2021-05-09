@@ -1,52 +1,50 @@
-import io from 'socket.io-client';
+import { SocketContext } from './socket-context';
 import logo from './logo.svg';
 import './App.css';
+import { useCallback, useContext, useEffect, useState } from 'react';
 
 function App() {
-  const socket = io('http://localhost:3001');
-  socket.on('connect_error', function (e) {
-    console.log('erro', e);
-  });
-  socket.on('connect', function () {
-    console.log('Connected');
+  const socket = useContext(SocketContext);
+  const [userMessage, setUserMessage] = useState('');
+  const [room, setRoom] = useState('teste');
+  const handleMessage = useCallback((message) => {
+    console.log(message);
+  }, []);
 
-    socket.emit('events', 0, (response) =>
-      console.log('Identity:', response)
-    );
-  });
-  socket.on('events', function (data) {
-    console.log('event', data);
-  });
-  socket.on('exception', function (data) {
-    console.log('event', data);
-  });
-  socket.on('disconnect', function () {
-    console.log('Disconnected');
-  });
+  useEffect(() => {
+    socket.emit('join', room);
+    socket.on('message', handleMessage);
+    return () => {
+      socket.off('message', handleMessage);
+    };
+  }, [socket, handleMessage, room]);
   return (
     <div className='App'>
       <header className='App-header'>
-        <img src={logo} className='App-logo' alt='logo' />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className='App-link'
-          href='https://reactjs.org'
-          target='_blank'
-          rel='noopener noreferrer'
+        <img src={logo} className='App-logo' alt='logo' width={50} />
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (userMessage.length > 0) {
+              socket.emit('message', { to: room, message: userMessage });
+              setUserMessage('');
+            }
+          }}
         >
-          Learn React
-        </a>
+          <input
+            value={userMessage}
+            onChange={({ target: { value } }) => setUserMessage(value)}
+          />
+          <button type='submit'>Send</button>
+        </form>
+        <button
+          onClick={() => {
+            socket.emit('join', room);
+          }}
+        >
+          Join test room
+        </button>
       </header>
-      <button
-        onClick={() => {
-          console.log('emiting message');
-          socket.emit('events', { test: 'aaaa' });
-        }}
-      >
-        balbal
-      </button>
     </div>
   );
 }
