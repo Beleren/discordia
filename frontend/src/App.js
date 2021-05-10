@@ -8,10 +8,11 @@ function App() {
   const [userMessage, setUserMessage] = useState('');
   const [chatMessages, setChatMessages] = useState([]);
   const [room, setRoom] = useState('teste');
+
   const handleMessage = useCallback((message) => {
     setChatMessages((prevMessages) => {
       if (prevMessages.length >= 50) prevMessages.pop();
-      return [...prevMessages, message];
+      return [message, ...prevMessages];
     });
   }, []);
 
@@ -25,7 +26,7 @@ function App() {
   return (
     <div className='App'>
       <header className='App-header'>
-        <img src={logo} className='App-logo' alt='logo' width={50} />
+        <img src={logo} className='App-logo' alt='logo' width={100} />
         <div style={{ width: '50vw' }}>
           <form
             onSubmit={(e) => {
@@ -44,7 +45,7 @@ function App() {
           </form>
           <div
             style={{
-              border: '1px solid black',
+              border: '1px solid grey',
               height: '40vh',
               overflowY: 'auto'
             }}
